@@ -1,11 +1,9 @@
 package mqtt
 
-import producers.MqttClient
+import producers.CustomMqttClient
 import org.eclipse.paho.client.mqttv3.{MqttClient, MqttConnectOptions, MqttException, MqttTopic}
 
-object TestMqttProducer {
-
-  def main(args: Array[String]): Unit = {
+object TestMqttProducer extends App {
 
     val brokerUrl = "ws://localhost:9001"
     val domain = "testtopic"
@@ -14,7 +12,7 @@ object TestMqttProducer {
     val user = "robe"
     val pass = "mosquitto"
 
-    val mqtt = MqttClient
+    val mqtt = CustomMqttClient
 
     val mqttOpts: MqttConnectOptions = mqtt.connectOptions
 
@@ -36,5 +34,4 @@ object TestMqttProducer {
         e.printStackTrace()
         System.exit(-1)
     }
-  }
 }

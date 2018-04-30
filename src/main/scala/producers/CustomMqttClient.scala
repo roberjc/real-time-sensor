@@ -1,8 +1,10 @@
 package producers
 
+import dataUtils.DataGenerator.{buildDeviceData, genRandDeviceId}
 import org.eclipse.paho.client.mqttv3._
+import play.api.libs.json.JsValue
 
-object MqttClient extends MqttCallback{
+object CustomMqttClient extends MqttCallback{
 
   val connectOptions = new MqttConnectOptions
 
@@ -45,9 +47,11 @@ object MqttClient extends MqttCallback{
     if (isPublisher) {
       var i = 1
       while ( {
-        i <= 10
+        i <= 500
       }) {
-        val pubMsg = "{\"pubmsg\":" + i + "}"
+        val deviceData: JsValue = buildDeviceData(i, 20)
+        val pubMsg = deviceData.toString()
+        //val pubMsg = "{\"pubmsg\":" + i + "}"
         val pubQoS = 0
         val message = new MqttMessage(pubMsg.getBytes)
         message.setQos(pubQoS)
@@ -59,7 +63,7 @@ object MqttClient extends MqttCallback{
           val token: MqttDeliveryToken = mqttTopic.publish(message)
           // Wait until the message has been delivered to the broker
           token.waitForCompletion()
-          Thread.sleep(100)
+          Thread.sleep(5000)
         } catch {
           case e: Exception =>
             e.printStackTrace()

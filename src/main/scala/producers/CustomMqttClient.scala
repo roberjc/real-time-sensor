@@ -1,8 +1,11 @@
 package producers
 
+import java.util.Calendar
+
 import dataUtils.DataGenerator.{buildDeviceData, genRandDeviceId}
 import org.eclipse.paho.client.mqttv3._
 import play.api.libs.json.JsValue
+
 
 object CustomMqttClient extends MqttCallback{
 
@@ -49,7 +52,8 @@ object CustomMqttClient extends MqttCallback{
       while ( {
         i <= 500
       }) {
-        val deviceData: JsValue = buildDeviceData(i, 20)
+        val deviceId = genRandDeviceId(10)
+        val deviceData: JsValue = buildDeviceData(deviceId, Calendar.getInstance().getTime.getHours)
         val pubMsg = deviceData.toString()
         //val pubMsg = "{\"pubmsg\":" + i + "}"
         val pubQoS = 0

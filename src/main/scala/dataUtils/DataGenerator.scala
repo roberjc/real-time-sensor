@@ -1,5 +1,6 @@
 package dataUtils
 
+import java.text.SimpleDateFormat
 import java.util.Calendar
 
 import play.api.libs.json.{JsNumber, JsObject, JsString, JsValue}
@@ -47,13 +48,15 @@ object DataGenerator {
     * @return device data in JSON format
     */
   def buildDeviceData(deviceId: Long, hour: Int): JsValue = {
-    val temp = genRandTemp(deviceId, 20)
+    val temp = genRandTemp(deviceId, hour)
     val hum = genRandHum(temp)
+    val dateFormat = "dd-MM-yyyy HH:mm:ss"
+    val sdf = new SimpleDateFormat(dateFormat)
 
     val res: JsValue = JsObject(
       Seq(
         "device_id" -> JsNumber(deviceId),
-        "event_time" -> JsString(Calendar.getInstance().getTime.toString),
+        "event_time" -> JsString(sdf.format(Calendar.getInstance().getTime)),
         "measures" -> JsObject(
           Seq(
             "temperature" -> JsNumber(temp),

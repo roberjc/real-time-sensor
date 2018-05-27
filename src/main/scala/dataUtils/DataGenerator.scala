@@ -9,14 +9,15 @@ import scala.util.Random
 
 object DataGenerator {
 
-  def genRandDeviceId(numberDevices: Int): Long = {
+  def generateRandom(numberDevices: Int): Long = {
     val random = new scala.util.Random
-    val res = random.nextInt(numberDevices).toLong
-
+    var res = random.nextInt(numberDevices).toLong
+    if(res == 0)
+      res = generateRandom(numberDevices)
     return res
   }
 
-  private def genRandTemp(deviceId: Long = 0L, hour: Int): Double = {
+  private def generateTemp(deviceId: Long = 0L, hour: Int): Double = {
     //Set a seed based random number and then a new free random
     // with a variation of 2 degrees
     val seedRandom = new scala.util.Random(deviceId)
@@ -34,7 +35,7 @@ object DataGenerator {
     return res
   }
 
-  private def genRandHum(temp: Double): Int ={
+  private def generateHum(temp: Double): Int ={
     val baseRandom = new Random(Math.round(temp))
     val res = baseRandom.nextInt(100 / 5)*5
 
@@ -47,14 +48,15 @@ object DataGenerator {
     * @param hour     hour in the day when the temp is generated
     * @return device data in JSON format
     */
-  def buildDeviceData(deviceId: Long, hour: Int): JsValue = {
-    val temp = genRandTemp(deviceId, hour)
-    val hum = genRandHum(temp)
+  def buildDeviceData(sectorId: Long, deviceId: Long, hour: Int): JsValue = {
+    val temp = generateTemp(sectorId, hour)
+    val hum = generateHum(temp)
     val dateFormat = "dd-MM-yyyy HH:mm:ss"
     val sdf = new SimpleDateFormat(dateFormat)
 
     val res: JsValue = JsObject(
       Seq(
+        "sector_id" -> JsNumber(sectorId),
         "device_id" -> JsNumber(deviceId),
         "event_time" -> JsString(sdf.format(Calendar.getInstance().getTime)),
         "measures" -> JsObject(

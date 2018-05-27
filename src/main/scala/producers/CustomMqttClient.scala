@@ -2,7 +2,7 @@ package producers
 
 import java.util.Calendar
 
-import dataUtils.DataGenerator.{buildDeviceData, genRandDeviceId}
+import dataUtils.DataGenerator.{buildDeviceData, generateRandom}
 import org.eclipse.paho.client.mqttv3._
 import play.api.libs.json.JsValue
 
@@ -52,8 +52,9 @@ object CustomMqttClient extends MqttCallback{
       while ( {
         i <= 500
       }) {
-        val deviceId = genRandDeviceId(10)
-        val deviceData: JsValue = buildDeviceData(deviceId, Calendar.getInstance().getTime.getHours)
+        val sectorId = generateRandom(20)
+        val deviceId = generateRandom(2)
+        val deviceData: JsValue = buildDeviceData(sectorId, deviceId, Calendar.getInstance().getTime.getHours)
         val pubMsg = deviceData.toString()
         //val pubMsg = "{\"pubmsg\":" + i + "}"
         val pubQoS = 0
@@ -67,7 +68,7 @@ object CustomMqttClient extends MqttCallback{
           val token: MqttDeliveryToken = mqttTopic.publish(message)
           // Wait until the message has been delivered to the broker
           token.waitForCompletion()
-          Thread.sleep(5000)
+          Thread.sleep(2000)
         } catch {
           case e: Exception =>
             e.printStackTrace()

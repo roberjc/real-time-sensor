@@ -1,13 +1,13 @@
-package producers
+package mqtt
 
 import java.util.Calendar
 
-import dataUtils.DataGenerator.{buildDeviceData, generateRandom}
+import mqtt.MqttDataGenerator.{buildDeviceData, generateRandom}
 import org.eclipse.paho.client.mqttv3._
 import play.api.libs.json.JsValue
 
 
-object CustomMqttClient extends MqttCallback{
+object MqttProducer extends MqttCallback{
 
   val connectOptions = new MqttConnectOptions
 
@@ -19,7 +19,7 @@ object CustomMqttClient extends MqttCallback{
     * This callback is invoked upon losing the MQTT connection.
     */
   override def connectionLost(throwable: Throwable): Unit = {
-    System.out.println("Conexión perdida")
+    println("Connection refused!")
   }
 
   /**
@@ -28,8 +28,8 @@ object CustomMqttClient extends MqttCallback{
     */
   @throws[Exception]
   override def messageArrived(s: String, mqttMessage: MqttMessage): Unit = {
-    System.out.println("Topic: " + s)
-    System.out.println("Mensaje: " + mqttMessage)
+    println("Topic: " + s)
+    println("Message: " + mqttMessage)
   }
 
   /**
@@ -38,7 +38,7 @@ object CustomMqttClient extends MqttCallback{
     * is successfully received by the broker.
     */
   override def deliveryComplete(iMqttDeliveryToken: IMqttDeliveryToken): Unit = {
-    System.out.println("Mensaje recibido")
+    println("Message Received!\n")
   }
 
   def setTopic(client: MqttClient, topic: String): MqttTopic = {
@@ -56,16 +56,18 @@ object CustomMqttClient extends MqttCallback{
         val deviceId = generateRandom(2)
         val deviceData: JsValue = buildDeviceData(sectorId, deviceId, Calendar.getInstance().getTime.getHours)
         val pubMsg = deviceData.toString()
-        //val pubMsg = "{\"pubmsg\":" + i + "}"
         val pubQoS = 0
         val message = new MqttMessage(pubMsg.getBytes)
+
         message.setQos(pubQoS)
         message.setRetained(false)
+
         // Publish the message
-        System.out.println("Publishing to topic \"" + mqttTopic.getName + "\" qos " + pubQoS)
-        var token = null
+        println(">> Publishing to topic \"" + mqttTopic.getName + "\" qos " + pubQoS)
+
         try { // publish message to broker
           val token: MqttDeliveryToken = mqttTopic.publish(message)
+
           // Wait until the message has been delivered to the broker
           token.waitForCompletion()
           Thread.sleep(2000)

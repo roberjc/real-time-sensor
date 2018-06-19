@@ -1,4 +1,4 @@
-package dataUtils
+package mqtt
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -7,7 +7,8 @@ import play.api.libs.json.{JsNumber, JsObject, JsString, JsValue}
 
 import scala.util.Random
 
-object DataGenerator {
+
+object MqttDataGenerator {
 
   def generateRandom(numberDevices: Int): Long = {
     val random = new scala.util.Random

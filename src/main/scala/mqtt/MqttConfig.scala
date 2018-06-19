@@ -1,18 +1,18 @@
 package mqtt
 
-import producers.CustomMqttClient
-import org.eclipse.paho.client.mqttv3.{MqttClient, MqttConnectOptions, MqttException, MqttTopic}
+import org.eclipse.paho.client.mqttv3.{MqttClient, MqttConnectOptions, MqttException}
 
-object TestMqttProducer extends App {
 
-    val brokerUrl = "ws://localhost:9001"
+object MqttConfig extends App {
+
+    val brokerUrl = "tcp://master:1883"
     val domain = "testtopic"
     val subdomain = ""
-    val deviceId = "clientId-serobe"
+    val deviceId = "MyLaptop"
     val user = "robe"
-    val pass = "mosquitto"
+    val pass = "robe"
 
-    val mqtt = CustomMqttClient
+    val mqtt = MqttProducer
 
     val mqttOpts: MqttConnectOptions = mqtt.connectOptions
 
@@ -25,10 +25,10 @@ object TestMqttProducer extends App {
       val client = new MqttClient(brokerUrl, deviceId)
       client.setCallback(mqtt)
       client.connect(mqttOpts)
-      System.out.println("Conectado a: " + brokerUrl)
+      System.out.println(">> Connected to Mosquitto broker: " + brokerUrl + "\n")
       val topic = mqtt.setTopic(client, domain)
       mqtt.setPublish(topic)
-      //mqtt.setSubscribe(client, domain);
+
     } catch {
       case e: MqttException =>
         e.printStackTrace()
